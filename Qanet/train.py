@@ -45,7 +45,7 @@ sess = tf.Session()
 sess.run(tf.global_variables_initializer())
 for i in range(train_step):
     rand_query_padd, rand_passage_padd, rand_y_padd, rand_y_index, answer_sel1, answer_sel2, answer_sel3 = Data_input_train.get_batch(batch_size)
-    if i%100 == 0:
+    if i%10 == 0:
         train_loss,train_acc = sess.run([QaModel.loss,QaModel.accuary],feed_dict={
             QaModel.input_context:rand_passage_padd,
             QaModel.input_question:rand_query_padd,
@@ -57,6 +57,20 @@ for i in range(train_step):
             QaModel.dropout_keep_prob:1.0
         })
         print("step {}, train acc:{}, train loss:{}".format(i,train_acc,train_loss))
+        
+        rand_query_padd_test, rand_passage_padd_test, rand_y_padd_test, rand_y_index_test, answer_sel1_test, answer_sel2_test, answer_sel3_test = Data_input_vali.get_batch(1000)
+        test_loss,test_acc = sess.run([QaModel.loss,QaModel.accuary],feed_dict={
+            QaModel.input_context:rand_passage_padd_test,
+            QaModel.input_question:rand_query_padd_test,
+            QaModel.input_answer_1:answer_sel1_test,
+            QaModel.input_answer_2: answer_sel2_test,
+            QaModel.input_answer_3: answer_sel3_test,
+            QaModel.input_y: rand_y_padd_test,
+            QaModel.input_y_index: rand_y_index_test,
+            QaModel.dropout_keep_prob:1.0
+        })
+        print("step {}, test acc:{}, test loss:{}".format(i,test_acc,test_loss))
+        
 
     train_step = sess.run(QaModel.train_step,feed_dict={
         QaModel.input_context: rand_passage_padd,

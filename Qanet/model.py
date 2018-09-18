@@ -26,7 +26,7 @@ class QAnet(object):
         self.answer_encode = self.encoder(self.embedded_y_expanded,self.config['answer_length'])
         self.h_drop = tf.nn.dropout(info_encode,self.dropout_keep_prob)
         self.output()
-        self.loss = tf.nn.softmax_cross_entropy_with_logits(labels=self.answer_encode, logits=self.output_vec)
+        self.loss = tf.reduce_mean( tf.sqrt(tf.reduce_sum(tf.square(self.answer_encode-self.output_vec),1)))
         self.train()
         tf.summary.scalar('loss', self.loss)
         self.accuary = self.acc()
